@@ -1,0 +1,30 @@
+version: '3'
+
+dotenv:
+- Taskfile.env
+
+
+tasks:
+  default:
+    silent: true
+    cmds:
+    - task --list
+    
+  install:
+    desc: prepare instance with recipes
+    vars:
+      INVENTORY:
+          sh: ./provisioner/inventory.pkgx
+      PLAYBOOKS: ./provisioner/playbooks
+      ROLES: ./provisioner/roles
+    cmds:
+    - jetp ssh \
+             --inventory "${INVENTORY}" \
+             --playbook "${PLAYBOOKS}/install.yml" \
+             --roles "${ROLES}" \
+             -vvv
+    - jetp ssh \
+             --inventory "${INVENTORY}" \
+             --playbook "${PLAYBOOKS}/tests.yml" \
+             --roles "${ROLES}" \
+             -vvv

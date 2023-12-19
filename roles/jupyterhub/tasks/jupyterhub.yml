@@ -1,0 +1,21 @@
+- !shell
+  name: download docker convenience installation script
+  cmd: curl -fsSL https://get.docker.com -o get-docker.sh
+
+- !shell
+  name: install docker
+  with:
+    sudo: root
+  cmd: sh ./get-docker.sh
+
+#- !shell
+#  name: create the docker group
+#  with:
+#    sudo: root
+#  cmd: groupadd docker
+   
+- !shell
+  name: add ubuntu to the docker group
+  with:
+    sudo: root
+  cmd: usermod -aG docker ubuntu
