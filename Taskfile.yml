@@ -1,9 +1,5 @@
 version: '3'
 
-dotenv:
-- Taskfile.env
-
-
 tasks:
   default:
     silent: true
