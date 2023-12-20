@@ -1,0 +1,5 @@
+- hosts: targets
+  become: true
+  tasks:
+  - import_role:
+      name: jupyterhub

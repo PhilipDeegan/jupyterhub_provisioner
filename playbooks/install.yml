@@ -1,9 +1,0 @@
-- name: CI/CD golden-image building
-  groups:
-  - targets 
-
-  roles:
-  - role: docker
-  - role: gitlab-runner
-  - role: pkgx
-  - role: mkdocs

@@ -1,0 +1,16 @@
+[Unit]
+Description=Supervisord service in golang
+ConditionFileIsExecutable=/usr/local/bin/supervisord_0.7.3_Linux_64-bit/supervisord
+
+[Service]
+StartLimitInterval=5
+StartLimitBurst=10
+ExecStart=/usr/local/bin/supervisord_0.7.3_Linux_64-bit/supervisord --configuration /mnt/persistent-volume/supervisord/etc/supervisord.conf
+
+Restart=always
+
+RestartSec=120
+EnvironmentFile=-/etc/sysconfig/go-supervisord
+
+[Install]
+WantedBy=multi-user.target

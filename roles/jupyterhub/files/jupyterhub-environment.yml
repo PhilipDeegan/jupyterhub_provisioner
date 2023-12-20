@@ -1,0 +1,10 @@
+name: jupyterhub
+channels:
+ - conda-forge
+ - anaconda
+dependencies:
+ - python==3.10*
+ - pip
+ - jupyterhub=4.0.0
+ - pip:
+   - libcloudspawner
