@@ -5,3 +5,4 @@ dependencies:
   jetporch.com: '*'
   openssh.com: '*'
   pkgx: '1.0.0'
+  ansible.com: '*'

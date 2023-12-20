@@ -5,22 +5,65 @@ tasks:
     silent: true
     cmds:
     - task --list
-    
+  
   install:
-    desc: prepare instance with recipes
-    vars:
-      INVENTORY:
-          sh: ./provisioner/inventory.pkgx
-      PLAYBOOKS: ./provisioner/playbooks
-      ROLES: ./provisioner/roles
+    desc: prepare instance with Ansible playbooks
     cmds:
-    - jetp ssh \
-             --inventory "${INVENTORY}" \
-             --playbook "${PLAYBOOKS}/install.yml" \
-             --roles "${ROLES}" \
-             -vvv
-    - jetp ssh \
-             --inventory "${INVENTORY}" \
-             --playbook "${PLAYBOOKS}/tests.yml" \
-             --roles "${ROLES}" \
-             -vvv
+    - |
+      pkgx +gnu.org/coreutils env \
+           --split-string \
+           --ignore-environment \
+           REMOTE_FQDN="${REMOTE_FQDN}" \
+           REMOTE_USER="${REMOTE_USER}" \
+           ANSIBLE_SSH_USER="${REMOTE_USER}" \
+           USER="${USER}" \
+           HOME="${HOME}" \
+           PATH="${HOME}/.pkgx/bin:/bin:/usr/bin:/usr/local/bin" \
+           pkgx +gnu.org/bash^5 bash \
+                --login \
+                --noprofile \
+                --norc \
+                - <<'EOF'
+                  eval "$(pkgx --shellcode)"
+                  source ../Taskfile.env
+                  eval "$(ssh-agent)"
+                  ssh-add $CONSTRUCTOR_SSH_KEY_PATH
+                  #printenv PATH
+                  export INVENTORY="${PWD}/inventory-ansible.pkgx"
+                  export ANSIBLE_ROLES_PATH="${PWD}/roles"
+                  ansible-playbook \
+                      --inventory "${INVENTORY}" \
+                      "${PWD}/playbooks/main.yaml"
+      EOF
+
+  jetp_install:
+    desc: prepare instance with recipes
+    cmds:
+    - |
+      pkgx +gnu.org/coreutils env \
+           --split-string \
+           --ignore-environment \
+           REMOTE_FQDN="${REMOTE_FQDN}" \
+           REMOTE_USER="${REMOTE_USER}" \
+           USER="${USER}" \
+           HOME="${HOME}" \
+           PATH="${HOME}/.pkgx/bin:/bin:/usr/bin:/usr/local/bin" \
+           pkgx +gnu.org/bash^5 bash \
+                --login \
+                --noprofile \
+                --norc \
+                - <<'EOF'
+                  eval "$(pkgx --shellcode)"
+                  source ../Taskfile.env
+                  eval "$(ssh-agent)"
+                  ssh-add $CONSTRUCTOR_SSH_KEY_PATH
+                  ssh-add -L
+                  export INVENTORY="./inventory.pkgx"
+                  export PLAYBOOKS="./playbooks"
+                  export ROLES="./roles"
+                  jetp ssh \
+                      --inventory "${INVENTORY}" \
+                      --playbook "${PLAYBOOKS}/install.yml" \
+                      --roles "${ROLES}" \
+                      -vvv
+      EOF
