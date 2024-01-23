@@ -5,9 +5,9 @@ After=network-online.target
 [Service]
 Type=simple
 EnvironmentFile={{ hub_persistent_volume_path }}/hub/.env
-WorkingDirectory={{ hub_persistent_volume_path }}
+WorkingDirectory={{ hub_persistent_volume_path }}/hub
 User=jupyterhub
-Group=jupyerhub
+Group=jupyterhub
 UMask=007
 
 ExecStart=/usr/local/bin/jupyterhub -f {{ hub_persistent_volume_path }}/hub/jupyterhub.conf  
