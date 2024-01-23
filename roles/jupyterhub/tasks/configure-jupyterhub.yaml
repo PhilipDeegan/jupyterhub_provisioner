@@ -13,7 +13,7 @@
 
 - name: Push systemd env file
   ansible.builtin.template:
-    src: "systemd/jupyterhub.env"
+    src: "systemd/jupyterhub.env.j2"
     dest: "{{ hub_persistent_volume_path }}/hub/.env"
     owner: jupyterhub
     group: jupyterhub
@@ -21,7 +21,7 @@
 
 - name: Push jupyterhub config file
   ansible.builtin.template:
-    src: "jupyterhub/jupyterhub.conf"
+    src: "jupyterhub/jupyterhub.conf.j2"
     dest: "{{ hub_persistent_volume_path }}/hub/jupyterhub.conf"
     owner: jupyterhub
     group: jupyterhub
