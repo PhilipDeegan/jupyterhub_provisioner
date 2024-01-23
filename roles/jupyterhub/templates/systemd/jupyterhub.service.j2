@@ -5,12 +5,12 @@ After=network-online.target
 [Service]
 Type=simple
 EnvironmentFile={{ hub_persistent_volume_path }}/hub/.env
-WorkingDirectory=$JHUB_WORKDIR
-User=$JHUB_USER
-Group=$JHUB_GROUP
+WorkingDirectory={{ hub_persistent_volume_path }}
+User=jupyterhub
+Group=jupyerhub
 UMask=007
 
-ExecStart=/usr/local/bin/jupyterhub -f $JHUB_CONFIG_FILE  
+ExecStart=/usr/local/bin/jupyterhub -f {{ hub_persistent_volume_path }}/hub/jupyterhub.conf  
 Restart=on-failure
 
 # Configures the time to wait before service is stopped forcefully.
