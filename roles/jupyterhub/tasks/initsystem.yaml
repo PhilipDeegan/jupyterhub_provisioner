@@ -1,0 +1,22 @@
+- name: Download Go supervisord (tar.gz)
+  ansible.builtin.get_url:
+      url: https://github.com/ochinchina/supervisord/releases/download/v0.7.3/supervisord_0.7.3_Linux_64-bit.tar.gz
+      dest: /root/supervisord.tar.gz
+
+- name: Unarchive Go supervisord
+  ansible.builtin.unarchive:
+    src: /root/supervisord.tar.gz
+    dest: /usr/local/bin
+    remote_src: yes
+
+- name: Install systemd unit for go-supervisord
+  ansible.builtin.copy:
+    src: go-supervisord.service
+    dest: /etc/systemd/system
+    mode: 600
+
+- name: Enable supervisord unit
+  ansible.builtin.systemd_service:
+    name: go-supervisord
+    daemon_reload: true
+    enabled: true

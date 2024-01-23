@@ -35,9 +35,42 @@ tasks:
                   export INVENTORY="${PWD}/inventory-ansible.pkgx"
                   export ANSIBLE_ROLES_PATH="${PWD}/roles"
                   ansible-playbook \
+                      --tags install \
                       --inventory "${INVENTORY}" \
                       "${PWD}/playbooks/main.yaml"
       EOF
+
+  configure:
+    desc: configure Jupyterhub instance with Ansible playbooks
+    cmds:
+    - |
+      pkgx +gnu.org/coreutils env \
+           --split-string \
+           --ignore-environment \
+           REMOTE_FQDN="${REMOTE_FQDN}" \
+           REMOTE_USER="${REMOTE_USER}" \
+           ANSIBLE_SSH_USER="${REMOTE_USER}" \
+           USER="${USER}" \
+           HOME="${HOME}" \
+           PATH="${HOME}/.pkgx/bin:/bin:/usr/bin:/usr/local/bin" \
+           pkgx +gnu.org/bash^5 bash \
+                --login \
+                --noprofile \
+                --norc \
+                - <<'EOF'
+                  eval "$(pkgx --shellcode)"
+                  eval "$(ssh-agent)" 2>&1 > /dev/null
+                  ssh-add -q "{{.CONSTRUCTOR_SSH_KEY_PATH}}" 2>&1 > /dev/null
+                  printenv PATH
+                  export INVENTORY="${PWD}/inventory-ansible.pkgx"
+                  export ANSIBLE_ROLES_PATH="${PWD}/roles"
+                  ansible-playbook \
+                      --tags configure \
+                      --inventory "${INVENTORY}" \
+                      "${PWD}/playbooks/main.yaml"
+      EOF
+
+
 
   jetp_install:
     desc: prepare instance with recipes

@@ -1,133 +1,19 @@
 ---
+- import_tasks: docker.yaml
+  tags: install
 
-- name: Add some packages
-  ansible.builtin.apt:
-      name: "{{ item }}"
-      update_cache: yes
-      cache_valid_time: 3600
-  loop:
-      - acl
-      - debian-keyring
-      - debian-archive-keyring
-      - apt-transport-https
-      - zfsutils-linux
+- import_tasks: packages.yaml
+  tags: install
 
-- name: Add Docker GPG apt Key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
+- import_tasks: initsystem.yaml
+  tags: install
 
-- name: Add Docker Repository
-  apt_repository:
-    repo: deb https://download.docker.com/linux/ubuntu jammy stable
-    state: present
+- import_tasks: user.yaml
+  tags: install
 
-- name: Update apt and install docker-ce
-  apt:
-    name: docker-ce
-    state: latest
-    update_cache: true
+- import_tasks: reverseproxy.yaml
+  tags: install
 
-- name: Ensure Ubuntu is in docker group
-  ansible.builtin.user:
-    name: ubuntu
-    groups:
-      - docker
-    append: true
+- import_tasks: python-envs.yaml
+  tags: install
 
-- name: Download Go supervisord (tar.gz)
-  ansible.builtin.get_url:
-      url: https://github.com/ochinchina/supervisord/releases/download/v0.7.3/supervisord_0.7.3_Linux_64-bit.tar.gz
-      dest: /root/supervisord.tar.gz
-
-- name: Unarchive Go supervisord
-  ansible.builtin.unarchive:
-    src: /root/supervisord.tar.gz
-    dest: /usr/local/bin
-    remote_src: yes
-
-- name: Install systemd unit for go-supervisord
-  ansible.builtin.copy:
-    src: go-supervisord.service
-    dest: /etc/systemd/system
-    mode: 600
-
-- name: Enable supervisord unit
-  ansible.builtin.systemd_service:
-    name: go-supervisord
-    daemon_reload: true
-    enabled: true
-
-- name: Add apt source for Caddy
-  block:
-    - name: Check GPG Key
-      stat:
-          path: /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-      register: caddy_gpg_ok
-
-    - name: Add Caddy GPG key
-      ansible.builtin.get_url:
-        url: https://dl.cloudsmith.io/public/caddy/stable/gpg.key
-        dest: /root/caddy-stable-archive-keyring.gpg.tmp
-      when: not caddy_gpg_ok.stat.exists
-
-    - name: Dearmor Caddy GPG Key
-      ansible.builtin.shell:
-        cmd: gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg /root/caddy-stable-archive-keyring.gpg.tmp
-      when: not caddy_gpg_ok.stat.exists
-
-    - name: Add Caddy repo
-      ansible.builtin.apt_repository:
-        repo: deb [signed-by=/usr/share/keyrings/caddy-stable-archive-keyring.gpg] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main
-        state: present
-        filename: caddy
-
-- name: Install Caddy
-  ansible.builtin.apt:
-      update_cache: yes
-      name: caddy
-
-- name: Add jupyterhub group
-  ansible.builtin.group:
-    name: jupyterhub
-
-- name: Add jupyterhub user
-  ansible.builtin.user:
-      name: jupyterhub
-      group: jupyterhub
-      create_home: true
-      home: /home/jupyterhub
-      shell: /bin/bash
-      comment: User jupyterhub
-      uid: 5000
-
-- name: Create bin folder for jupyterhub
-  become: true
-  become_user: jupyterhub
-  ansible.builtin.file:
-      path: /home/jupyterhub/bin
-      state: directory
-      mode: '0750'
-
-- name: Download micromamba
-  become: true
-  become_user: jupyterhub
-  ansible.builtin.get_url:
-      url: https://github.com/mamba-org/micromamba-releases/releases/download/1.5.5-0/micromamba-linux-64
-      dest: /home/jupyterhub/bin/micromamba
-      mode: 0550
-
-- name: Copy conda env ansible.builtin.file
-  become: true
-  become_user: jupyterhub
-  ansible.builtin.copy:
-      src: jupyterhub-environment.yml
-      dest: /home/jupyterhub/jupyterhub-environment.yml
-      remote_src: no
-
-- name: Create env 
-  become: true
-  become_user: jupyterhub
-  ansible.builtin.shell:
-    cmd: /home/jupyterhub/bin/micromamba create --quiet --yes --file jupyterhub-environment.yml
-    chdir: /home/jupyterhub

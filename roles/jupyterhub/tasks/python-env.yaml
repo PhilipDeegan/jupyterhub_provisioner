@@ -1,0 +1,22 @@
+- name: Download micromamba
+  become: true
+  become_user: jupyterhub
+  ansible.builtin.get_url:
+      url: https://github.com/mamba-org/micromamba-releases/releases/download/1.5.5-0/micromamba-linux-64
+      dest: /home/jupyterhub/bin/micromamba
+      mode: 0550
+
+- name: Copy conda env ansible.builtin.file
+  become: true
+  become_user: jupyterhub
+  ansible.builtin.copy:
+      src: jupyterhub-environment.yml
+      dest: /home/jupyterhub/jupyterhub-environment.yml
+      remote_src: no
+
+- name: Create env 
+  become: true
+  become_user: jupyterhub
+  ansible.builtin.shell:
+    cmd: /home/jupyterhub/bin/micromamba create --quiet --yes --file jupyterhub-environment.yml
+    chdir: /home/jupyterhub

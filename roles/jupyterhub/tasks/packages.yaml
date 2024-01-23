@@ -1,0 +1,11 @@
+- name: Add some packages
+  ansible.builtin.apt:
+      name: "{{ item }}"
+      update_cache: yes
+      cache_valid_time: 3600
+  loop:
+      - acl
+      - debian-keyring
+      - debian-archive-keyring
+      - apt-transport-https
+      - zfsutils-linux

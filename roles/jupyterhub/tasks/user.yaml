@@ -1,0 +1,21 @@
+- name: Add jupyterhub group
+  ansible.builtin.group:
+    name: jupyterhub
+
+- name: Add jupyterhub user
+  ansible.builtin.user:
+      name: jupyterhub
+      group: jupyterhub
+      create_home: true
+      home: /home/jupyterhub
+      shell: /bin/bash
+      comment: User jupyterhub
+      uid: 5000
+
+- name: Create bin folder for jupyterhub
+  become: true
+  become_user: jupyterhub
+  ansible.builtin.file:
+      path: /home/jupyterhub/bin
+      state: directory
+      mode: '0750'
