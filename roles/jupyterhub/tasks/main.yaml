@@ -14,10 +14,13 @@
 - import_tasks: python-env.yaml
   tags: install
 
+- import_tasks: process-supervisor.yaml
+  tags: install
+
 - import_tasks: zfs-filesystem.yaml
   tags: configure
 
-- import_tasks: process-supervisor.yaml
+- import_tasks: configure-jupyterhub.yaml
   tags: configure
 
 

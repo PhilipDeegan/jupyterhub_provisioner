@@ -1,21 +1,21 @@
 [Unit]
 Description=Jupyterhub service
 After=network-online.target
- 
+EnvironmentFile={{ hub_persistent_volume_path }}/hub/.env
+
 [Service]
 Type=simple
-WorkingDirectory={{ hub_persistent_volume_path }}/hub
- 
-User=jupyterhub
-Group=jupyterhub
+WorkingDirectory=$JHUB_WORKDIR
+
+User=$JHUB_USER
+Group=$JHUB_GROUP
 UMask=007
- 
-ExecStart=/home/jupyterhub/micromamba/envs/jupyterhub/bin/jupyterhub
- 
+
+ExecStart=/usr/local/bin/jupyterhub -f $JHUB_CONFIG_FILE  
 Restart=on-failure
- 
+
 # Configures the time to wait before service is stopped forcefully.
 TimeoutStopSec=300
- 
+
 [Install]
 WantedBy=multi-user.target

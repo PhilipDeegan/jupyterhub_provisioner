@@ -1,0 +1,28 @@
+- name: Ensure hub folder exist in persistent exist
+  ansible.builtin.file:
+    path: "{{ hub_persistent_volume_path }}/hub"
+    state: directory
+    owner: jupyterhub
+    group: jupyterhub
+
+- name: Set link to jupyterhub executable
+  ansible.builtin.file:
+    dest: /usr/local/bin/jupyterhub
+    src: /home/jupyterhub/micromamba/envs/jupyterhub/bin/jupyterhub
+    state: link
+
+- name: Push systemd env file
+  ansible.builtin.template:
+    src: "systemd/jupyterhub.env"
+    dest: "{{ hub_persistent_volume_path }}/hub/.env"
+    owner: jupyterhub
+    group: jupyterhub
+    mode: '0600'
+
+- name: Push jupyterhub config file
+  ansible.builtin.template:
+    src: "jupyterhub/jupyterhub.conf"
+    dest: "{{ hub_persistent_volume_path }}/hub/jupyterhub.conf"
+    owner: jupyterhub
+    group: jupyterhub
+    mode: '0600'
