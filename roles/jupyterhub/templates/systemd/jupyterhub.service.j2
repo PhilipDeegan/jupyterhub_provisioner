@@ -1,12 +1,11 @@
 [Unit]
 Description=Jupyterhub service
 After=network-online.target
-EnvironmentFile={{ hub_persistent_volume_path }}/hub/.env
 
 [Service]
 Type=simple
+EnvironmentFile={{ hub_persistent_volume_path }}/hub/.env
 WorkingDirectory=$JHUB_WORKDIR
-
 User=$JHUB_USER
 Group=$JHUB_GROUP
 UMask=007
