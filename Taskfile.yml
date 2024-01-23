@@ -5,6 +5,7 @@ tasks:
     silent: true
     cmds:
     - task --list
+
   init:
     cmds:
       - true
