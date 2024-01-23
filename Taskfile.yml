@@ -5,7 +5,10 @@ tasks:
     silent: true
     cmds:
     - task --list
-  
+  init:
+    cmds:
+      - true
+
   install:
     desc: prepare instance with Ansible playbooks
     cmds:
