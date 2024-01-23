@@ -1,7 +1,7 @@
 - name: Push systemd unit
   ansible.builtin.template:
     src: systemd/jupyterhub.service.j2
-    dest: "/etc/system/systemd/jupyterhub.service"
+    dest: "/etc/systemd/system/jupyterhub.service"
     owner: root
     group: root
     mode: '0600'
