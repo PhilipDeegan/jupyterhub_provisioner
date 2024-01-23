@@ -4,7 +4,14 @@
     state: directory
     owner: jupyterhub
     group: jupyterhub
-    
+
+- name: Ensure hub folder exist in persistent exist
+  file:
+    path: "{{ hub_persistent_volume_path }}/hub"
+    state: directory
+    owner: jupyterhub
+    group: jupyterhub
+
 - name: Push systemd unit
   ansible.builtin.template:
     src: systemd/jupyterhub.service.j2
