@@ -19,7 +19,6 @@ tasks:
            --ignore-environment \
            REMOTE_FQDN="${REMOTE_FQDN}" \
            REMOTE_USER="${REMOTE_USER}" \
-           ANSIBLE_SSH_USER="${REMOTE_USER}" \
            USER="${USER}" \
            HOME="${HOME}" \
            PATH="${HOME}/.pkgx/bin:/bin:/usr/bin:/usr/local/bin" \
@@ -31,7 +30,9 @@ tasks:
                   eval "$(pkgx --shellcode)"
                   eval "$(ssh-agent)" 2>&1 > /dev/null
                   ssh-add -q "{{.CONSTRUCTOR_SSH_KEY_PATH}}" 2>&1 > /dev/null
-                  printenv PATH
+                  export ANSIBLE_SSH_USER="{{.REMOTE_USER}}"
+                  export HUB_PERSISTENT_VOLUME_PATH="{{.HUB_PERSISTENT_VOLUME_PATH}}"
+                  export FILESERVER_EXPORT_PATH="{{.FILESERVER_EXPORT_PATH}}"
                   export INVENTORY="${PWD}/inventory-ansible.pkgx"
                   export ANSIBLE_ROLES_PATH="${PWD}/roles"
                   ansible-playbook \
