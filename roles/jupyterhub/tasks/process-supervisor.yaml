@@ -6,7 +6,7 @@
     group: jupyterhub
     
 - name: Push systemd unit
-  ansible.builtin.copy:
+  ansible.builtin.template:
     src: systemd/jupyterhub.service.j2
     dest: "{{ hub_persistent_volume_path }}/systemd/jupyterhub.service"
     owner: jupyterhub
