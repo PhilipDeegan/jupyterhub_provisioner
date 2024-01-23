@@ -1,0 +1,21 @@
+[Unit]
+Description=Jupyterhub service
+After=network-online.target
+ 
+[Service]
+Type=simple
+Directory={{ hub_persistent_volume_path }}
+ 
+User=jupyterhub
+Group=jupyterhub
+UMask=007
+ 
+ExecStart=/usr/bin/python3 -m http.server
+ 
+Restart=on-failure
+ 
+# Configures the time to wait before service is stopped forcefully.
+TimeoutStopSec=300
+ 
+[Install]
+WantedBy=multi-user.target

@@ -5,9 +5,6 @@
 - import_tasks: packages.yaml
   tags: install
 
-- import_tasks: initsystem.yaml
-  tags: install
-
 - import_tasks: user.yaml
   tags: install
 
@@ -16,4 +13,11 @@
 
 - import_tasks: python-env.yaml
   tags: install
+
+- import_tasks: zfs-filesystem.yaml
+  tags: configure
+
+- import_tasks: process-supervisor.yaml
+  tags: configure
+
 

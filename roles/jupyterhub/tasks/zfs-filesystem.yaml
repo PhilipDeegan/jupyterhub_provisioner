@@ -1,0 +1,4 @@
+- name: Create hub filesystem on zfs
+  community.general.zfs:
+    name: persistent-volumes/jupyterhub
+    state: present

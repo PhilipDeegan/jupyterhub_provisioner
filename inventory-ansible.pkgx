@@ -41,7 +41,9 @@ function main {
     "hosts": ["${REMOTE_FQDN:-UNSET}"],
     "vars": {
         "ansible_host": "${REMOTE_FQDN:-UNSET}",
-        "ansible_user": "${REMOTE_USER:-UNSET}"
+        "ansible_user": "${REMOTE_USER:-UNSET}",
+        "hub_persistent_volume_path": "${HUB_PERSISTENT_VOLUME_PATH:-UNSET}",
+        "fileserver_export_path": "${FILESERVER_EXPORT_PATH:-UNSET}"
     }
   }
 }

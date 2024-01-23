@@ -1,0 +1,15 @@
+- name: Ensure systemd folder exist in persistent exist
+  file:
+    path: "{{ hub_persistent_volume_path }}/systemd"
+    state: directory
+    owner: jupyterhub
+    group: jupyterhub
+    
+- name: Push systemd unit
+  ansible.builtin.copy:
+    src: systemd/jupyterhub.service.j2
+    dest: "{{ hub_persistent_volume_path }}/systemd/jupyterhub.service"
+    owner: jupyterhub
+    group: jupyterhub
+    mode: '0600'
+
