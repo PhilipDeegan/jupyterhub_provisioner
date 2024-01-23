@@ -13,9 +13,11 @@
     group: jupyterhub
     mode: '0600'
 
+- name: Enable unit on persistent volume
+  ansible.builtin.command: "systemctl enable {{ hub_persistent_volume_path }}/systemd/jupyterhub.service"
+
 - name: Make sure Jupyterhub unit is enable
   ansible.builtin.systemd_service:
     state: started
-    enabled: true
-    name: "{{ hub_persistent_volume_path }}/systemd/jupyterhub.service"
+    name: "jupyterhub.service"
 
