@@ -25,9 +25,9 @@ tasks:
                 --norc \
                 - <<'EOF'
                   eval "$(pkgx --shellcode)"
-                  eval "$(ssh-agent)"
-                  ssh-add $CONSTRUCTOR_SSH_KEY_PATH 2>&1 > /dev/null
-                  #printenv PATH
+                  eval "$(ssh-agent)" 2>&1 > /dev/null
+                  ssh-add -q "{{.CONSTRUCTOR_SSH_KEY_PATH}}" 2>&1 > /dev/null
+                  printenv PATH
                   export INVENTORY="${PWD}/inventory-ansible.pkgx"
                   export ANSIBLE_ROLES_PATH="${PWD}/roles"
                   ansible-playbook \
