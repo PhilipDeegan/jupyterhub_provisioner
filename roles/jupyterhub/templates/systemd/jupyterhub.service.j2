@@ -6,8 +6,8 @@ After=network-online.target
 Type=simple
 EnvironmentFile={{ hub_persistent_volume_path }}/hub/.env
 WorkingDirectory={{ hub_persistent_volume_path }}/hub
-User=jupyterhub
-Group=jupyterhub
+User=root
+Group=root
 UMask=007
 
 ExecStart=/bin/bash -c "jupyterhub -f {{ hub_persistent_volume_path }}/hub/jupyterhub.py"  
