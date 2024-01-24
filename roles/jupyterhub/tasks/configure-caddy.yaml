@@ -1,0 +1,21 @@
+- name: Ensure caddy folder exist in persistent exist
+  ansible.builtin.file:
+    path: "{{ hub_persistent_volume_path }}/caddy"
+    state: directory
+    owner: caddy
+    group: caddy
+
+- name: Push Caddy config file
+  ansible.builtin.template:
+    src: "caddy/Caddyfile.j2"
+    dest: "{{ hub_persistent_volume_path }}/caddy/Caddyfile"
+    owner: caddy
+    group: caddy
+    mode: '0600'
+
+- name: Start Caddy service
+  ansible.builtin.systemd_service:
+    name: caddy.service
+    daemon_reload: true
+    enabled: true
+    state: started
