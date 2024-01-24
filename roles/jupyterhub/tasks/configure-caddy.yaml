@@ -1,6 +1,13 @@
-- name: Ensure caddy folder exist in persistent exist
+- name: Ensure caddy folder exist in persistent
   ansible.builtin.file:
     path: "{{ hub_persistent_volume_path }}/caddy"
+    state: directory
+    owner: caddy
+    group: caddy
+
+- name: Ensure caddy storage folder exist in persistent
+  ansible.builtin.file:
+    path: "{{ hub_persistent_volume_path }}/caddy/storage"
     state: directory
     owner: caddy
     group: caddy
