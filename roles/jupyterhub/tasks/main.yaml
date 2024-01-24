@@ -23,4 +23,6 @@
 - import_tasks: configure-jupyterhub.yaml
   tags: configure
 
+- import_tasks: configure-caddy.yaml
+  tags: configure
 
