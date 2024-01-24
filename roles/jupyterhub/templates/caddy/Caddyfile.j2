@@ -3,6 +3,6 @@
     storage file_system {{ hub_persistent_volume_path }}/caddy/storage
 }
 
-{{ ansible_host }} {
-    reverse_proxy http://localhost:8000
+{{ jupyterhub_fqdn }} {
+	reverse_proxy http://localhost:8000
 }

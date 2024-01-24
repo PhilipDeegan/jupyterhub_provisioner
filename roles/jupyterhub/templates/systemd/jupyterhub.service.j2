@@ -10,7 +10,7 @@ User=jupyterhub
 Group=jupyterhub
 UMask=007
 
-ExecStart=/usr/local/bin/jupyterhub -f {{ hub_persistent_volume_path }}/hub/jupyterhub.conf  
+ExecStart=/bin/bash -c "jupyterhub -f {{ hub_persistent_volume_path }}/hub/jupyterhub.py"  
 Restart=on-failure
 
 # Configures the time to wait before service is stopped forcefully.

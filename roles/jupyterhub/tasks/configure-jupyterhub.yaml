@@ -5,12 +5,6 @@
     owner: jupyterhub
     group: jupyterhub
 
-- name: Set link to jupyterhub executable
-  ansible.builtin.file:
-    dest: /usr/local/bin/jupyterhub
-    src: /home/jupyterhub/micromamba/envs/jupyterhub/bin/jupyterhub
-    state: link
-
 - name: Push systemd env file
   ansible.builtin.template:
     src: "systemd/jupyterhub.env.j2"
@@ -21,8 +15,8 @@
 
 - name: Push jupyterhub config file
   ansible.builtin.template:
-    src: "jupyterhub/jupyterhub.conf.j2"
-    dest: "{{ hub_persistent_volume_path }}/hub/jupyterhub.conf"
+    src: "jupyterhub/jupyterhub.py.j2"
+    dest: "{{ hub_persistent_volume_path }}/hub/jupyterhub.py"
     owner: jupyterhub
     group: jupyterhub
     mode: '0600'

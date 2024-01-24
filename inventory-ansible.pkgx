@@ -43,7 +43,8 @@ function main {
         "ansible_host": "${REMOTE_FQDN:-UNSET}",
         "ansible_user": "${REMOTE_USER:-UNSET}",
         "hub_persistent_volume_path": "${HUB_PERSISTENT_VOLUME_PATH:-UNSET}",
-        "fileserver_export_path": "${FILESERVER_EXPORT_PATH:-UNSET}"
+        "fileserver_export_path": "${FILESERVER_EXPORT_PATH:-UNSET}",
+        "jupyterhub_fqdn": "${JUPYTERHUB_FQDN:-UNSET}"
     }
   }
 }
