@@ -32,6 +32,5 @@
   ansible.builtin.copy:
     src: jupytercloud_customs
     dest: "{{ hub_persistent_volume_path }}/hub/hub_customs/"
-    state: directory
     owner: jupyterhub
     group: jupyterhub
