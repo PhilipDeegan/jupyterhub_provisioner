@@ -1,0 +1,25 @@
+- name: Ensure novnc caddy folder present
+  ansible.builtin.file:
+    path: "{{ hub_persistent_volume_path }}/caddy/data/novnc"
+    state: directory
+    owner: caddy
+    group: caddy    
+
+- name: Download en unarchive noVNC
+  become: true
+  become_user: caddy
+  ansible.builtin.unarchive:
+    src: https://github.com/novnc/noVNC/archive/refs/tags/v1.4.0.zip
+    dest: "{{ hub_persistent_volume_path }}/caddy/data"
+    remote_src: yes
+    extra_opts:
+    - --transform
+    - s/^noVNC-1.4.0/novnc/
+
+- name: Ensure index.html link to vnc.html
+  ansible.builtin.file:
+    path: "{{ hub_persistent_volume_path }}/caddy/data/novnc/index.html"
+    src: "{{ hub_persistent_volume_path }}/caddy/data/novnc/novnc.html"
+    state: link
+    owner: caddy
+    group: caddy

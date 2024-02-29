@@ -26,3 +26,5 @@
 - import_tasks: configure-caddy.yaml
   tags: configure
 
+- import_tasks: configure-novnc.yaml
+  tags: configure
