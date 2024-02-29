@@ -9,3 +9,4 @@
       - debian-archive-keyring
       - apt-transport-https
       - zfsutils-linux
+      - unzip
