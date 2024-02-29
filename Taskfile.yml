@@ -66,6 +66,7 @@ tasks:
                   ssh-add -q "{{.CONSTRUCTOR_SSH_KEY_PATH}}" 2>&1 > /dev/null
                   export HUB_PERSISTENT_VOLUME_PATH="{{.HUB_PERSISTENT_VOLUME_PATH}}"
                   export JUPYTERHUB_FQDN="{{.JUPYTERHUB_FQDN}}"
+                  export NOVNC_FQDN="{{.NOVNC_FQDN}}"
                   export FILESERVER_EXPORT_PATH="{{.FILESERVER_EXPORT_PATH}}"
                   export INVENTORY="${PWD}/inventory-ansible.pkgx"
                   export ANSIBLE_ROLES_PATH="${PWD}/roles"
