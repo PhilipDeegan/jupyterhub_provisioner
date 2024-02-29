@@ -17,7 +17,7 @@
 - name: Ensure index.html link to vnc.html
   ansible.builtin.file:
     path: "{{ hub_persistent_volume_path }}/caddy/data/novnc/index.html"
-    src: "{{ hub_persistent_volume_path }}/caddy/data/novnc/novnc.html"
+    src: "{{ hub_persistent_volume_path }}/caddy/data/novnc/vnc.html"
     state: link
     owner: caddy
     group: caddy
