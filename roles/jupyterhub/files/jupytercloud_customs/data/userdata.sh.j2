@@ -1,16 +1,15 @@
 #!/bin/bash
 
-export home_prefix="{{ home_prefix }}"
+export home_prefix=/home/jupytercloud/
 
 # if user not exist, create it
 id {{ user }}
 if [ "$?" -ne 0 ]
 then
-    useradd -d ${home_prefix}/{{ user }} -m -s /bin/bash -c "Jupyter User {{ user }}" {{ user }}
+    useradd -d $home_prefix/{{ user }} -m -s /bin/bash -c "Jupyter User {{ user }}" {{ user }}
 fi
 
 export env_prefix="/home/jupyterhub/micromamba/envs/jupyterhub/"
-export default_kernel="phyocean-2022.11"
 
 {% for key, value in user_options_from_form.items() %}
 echo "{{key}}={{value}}"
@@ -43,7 +42,7 @@ After=graphical.target
 Type=simple
 User={{ user }}
 PAMName=login
-PIDFile=/home/%u/.vnc/%H%i.pid
+PIDFile=$home_prefix/%u/.vnc/%H%i.pid
 ExecStartPre=-/usr/bin/vncserver -kill :1 > /dev/null 2>&1
 ExecStart=/usr/bin/vncserver -xstartup /etc/tigervnc/xstartup -noreset -depth 24 -geometry 1440x900 -localhost yes --PasswordFile /etc/tigervnc/vncpassword -fg
 ExecStop=/usr/bin/vncserver -kill :1
@@ -66,7 +65,7 @@ After=tigervnc.service
 Type=simple
 User={{ user }}
 PAMName=login
-PIDFile=${home_prefix}/%u/.vnc/%H%i.pid
+PIDFile=$home_prefix/%u/.vnc/%H%i.pid
 ExecStart=$env_prefix/bin/websockify 127.0.0.1:9999 127.0.0.1:5901
 
 [Install]
@@ -90,10 +89,7 @@ cat <<EOF > /etc/jupyter/jupyter_notebook_config.py
 # permet a l'utilisateur de voir les sous-répertoire
 c.ServerApp.root_dir = '/'
 # mais démarrer dans le home de l'utilisateur
-c.ServerApp.preferred_dir = '${home_prefix}/{{ user }}'
-
-# c.MultiKernelManager.default_kernel_name = '$default_kernel'
-
+c.ServerApp.preferred_dir = '$home_prefix/{{ user }}'
 
 # Create a link to websockify (VNC to ws)
 # through jupyterhub-singleuser
@@ -103,7 +99,7 @@ c.LocalProcessSpawner.debug = True
 c.LauncherShortcuts.shortcuts = {
     'VirtualDesktop': {
 	'title': 'VirtualDesktop (noVNC)',
-        'target': 'https://{{ novnc_fqdn }}/?password=${VNCPASS}&autoconnect=true&path=/user/{{ user }}/proxy/9999&host={{ jupyterhub_fqdn }}&port=443',
+        'target': 'https://jupytercloud-vnc.virtualdata.cloud.resinfo.org/?password=${VNCPASS}&autoconnect=true&path=/user/{{ user }}/proxy/9999&host={{ jupyterhub_fqdn }}&port=443',
     }
 }
 
