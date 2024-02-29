@@ -16,6 +16,8 @@ c.Spawner.notebook_dir = ""
 c.Spawner.args = ['']
 c.Spawner.default_url = ""
 c.Spawner.port = 8000
+
+
 c.LibcloudSpawner.libcloud_driver_params = {"arg_user_id": "APPCRED_ID",
                                     "arg_key": "APPCRED_KEY",
                                     "ex_force_auth_version": "3.x_appcred",
@@ -29,4 +31,5 @@ c.LibcloudSpawner.userserver_keyname = "jupytercloud-2023-12"
 c.LibcloudSpawner.userserver_sizes = [("Small (1 core, 1.95Gb)", "vd.1")]
 c.LibcloudSpawner.userserver_images = [("JupyterLab Ubuntu 22.04", "ubuntu-2204.amd64-genericcloud.20230712")]
 
-c.LibcloudSpawner.userdata_template_name="example_userdata_from_vanilla_cloudimage.yaml.j2"
+c.LibcloudSpawner.userdata_template_module = "jupytercloud_customs"
+c.LibcloudSpawner.userdata_template_name = "userdata.sh.j2"

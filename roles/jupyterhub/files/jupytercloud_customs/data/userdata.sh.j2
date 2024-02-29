@@ -1,0 +1,152 @@
+#!/bin/bash
+
+export home_prefix="{{ home_prefix }}"
+
+# if user not exist, create it
+id {{ user }}
+if [ "$?" -ne 0 ]
+then
+    useradd -d ${home_prefix}/{{ user }} -m -s /bin/bash -c "Jupyter User {{ user }}" {{ user }}
+fi
+
+export env_prefix="/home/jupyterhub/micromamba/envs/jupyterhub/"
+export default_kernel="phyocean-2022.11"
+
+{% for key, value in user_options_from_form.items() %}
+echo "{{key}}={{value}}"
+{% endfor %}
+
+# 1. Generate unique VNC password
+VNCPASS=$(uuidgen)
+echo $VNCPASS |vncpasswd -f > /etc/tigervnc/vncpassword
+chown {{ user }} /etc/tigervnc/vncpassword
+chmod 600 /etc/tigervnc/vncpassword
+
+# 2. Create tigervnc start script
+cat <<EOF> /etc/tigervnc/xstartup
+#!/bin/sh
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+vncconfig -nowin &
+exec dbus-launch mate-session
+EOF
+chmod +x /etc/tigervnc/xstartup
+
+# 4. Configuration du service systemd
+# pour TigerVNC
+cat <<EOF> /etc/systemd/system/tigervnc.service
+[Unit]
+Description=Start Tiger vnc for jupyter user
+After=graphical.target
+
+[Service]
+Type=simple
+User={{ user }}
+PAMName=login
+PIDFile=/home/%u/.vnc/%H%i.pid
+ExecStartPre=-/usr/bin/vncserver -kill :1 > /dev/null 2>&1
+ExecStart=/usr/bin/vncserver -xstartup /etc/tigervnc/xstartup -noreset -depth 24 -geometry 1440x900 -localhost yes --PasswordFile /etc/tigervnc/vncpassword -fg
+ExecStop=/usr/bin/vncserver -kill :1
+
+[Install]
+WantedBy=default.target
+EOF
+
+# 6. Création d'un service pour websockify ( port 5901 > 9999 )
+# Créé un proxy websocket vers le serveur tigerVNC 
+# écoute sur localhost:9999
+# ce service est proxifié par jupyterhub-singleuser sur la machine sur "/proxy/9999"
+cat <<EOF> /etc/systemd/system/websockify.service
+[Unit]
+Description=Start Websockify to sockify VNC
+After=tigervnc.service
+
+[Service]
+#EnvironmentFile=/etc/tigervnc/envfile
+Type=simple
+User={{ user }}
+PAMName=login
+PIDFile=${home_prefix}/%u/.vnc/%H%i.pid
+ExecStart=$env_prefix/bin/websockify 127.0.0.1:9999 127.0.0.1:5901
+
+[Install]
+WantedBy=default.target
+EOF
+
+# 5. Activate and start TigerVNC and websockify
+systemctl daemon-reload
+systemctl restart tigervnc.service
+systemctl restart websockify.service
+systemctl enable tigervnc.service
+systemctl enable websockify.service
+
+
+# 5. Configuration de JUPYTER Single server
+# Notes de configuration :
+# Ajout d'un lien VirtualDesktop sur le panels (nécessite l'extension lab adhoc)
+
+mkdir -p /etc/jupyter
+cat <<EOF > /etc/jupyter/jupyter_notebook_config.py
+# permet a l'utilisateur de voir les sous-répertoire
+c.ServerApp.root_dir = '/'
+# mais démarrer dans le home de l'utilisateur
+c.ServerApp.preferred_dir = '${home_prefix}/{{ user }}'
+
+# c.MultiKernelManager.default_kernel_name = '$default_kernel'
+
+
+# Create a link to websockify (VNC to ws)
+# through jupyterhub-singleuser
+# and through jupyterhub proxy
+# User request > jupyterhub > jupyter-singleuser > websockify > tigerVNC
+c.LocalProcessSpawner.debug = True
+c.LauncherShortcuts.shortcuts = {
+    'VirtualDesktop': {
+	'title': 'VirtualDesktop (noVNC)',
+        'target': 'https://{{ novnc_fqdn }}/?password=${VNCPASS}&autoconnect=true&path=/user/{{ user }}/proxy/9999&host={{ jupyterhub_fqdn }}&port=443',
+    }
+}
+
+# Configuration de la jauge de mémoire
+try:
+    import psutil
+    mtotal = psutil.virtual_memory().total
+    # garder 2 Gb pour l'usage sys
+    c.ResourceUseDisplay.mem_limit = mtotal - (2 * 1024 * 1024 * 1024)
+except:
+    pass
+
+EOF
+
+# Create systemd service for jupyterhub-singleuser
+#
+cat <<EOF> /etc/default/jupyter
+{% for key, value in jhub_env.items() %}
+{{key}}={{value}}
+{% endfor %}
+PATH=$env_prefix/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+JUPYTERLAB_WORKSPACES_DIR = /tmp/jhub_workspace
+EOF
+
+JHUB_SINGLEUSER="$env_prefix/bin/jupyterhub-singleuser"
+
+cat <<EOF > /etc/systemd/system/jupyterhub-singleuser.service
+[Unit]
+Description=JupyterHub-singleuser instance
+ 
+[Service]
+WorkingDirectory=/tmp
+User={{ user }}
+EnvironmentFile=/etc/default/jupyter
+ExecStart=${JHUB_SINGLEUSER} --ip=0.0.0.0 {{ notebookargs }} \$@
+Restart=always
+OOMPolicy=continue
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Reload systemd commands
+# Start and enable service 
+systemctl daemon-reload
+systemctl restart jupyterhub-singleuser.service
+systemctl enable jupyterhub-singleuser.service

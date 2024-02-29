@@ -68,6 +68,7 @@ tasks:
                   export JUPYTERHUB_FQDN="{{.JUPYTERHUB_FQDN}}"
                   export NOVNC_FQDN="{{.NOVNC_FQDN}}"
                   export FILESERVER_EXPORT_PATH="{{.FILESERVER_EXPORT_PATH}}"
+                  export HOME_PREFIX="{{.HOME_PREFIX}}"
                   export INVENTORY="${PWD}/inventory-ansible.pkgx"
                   export ANSIBLE_ROLES_PATH="${PWD}/roles"
                   ansible-playbook \
