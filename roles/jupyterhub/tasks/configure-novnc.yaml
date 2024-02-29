@@ -10,7 +10,7 @@
   become_user: caddy
   ansible.builtin.unarchive:
     src: https://codeload.github.com/novnc/noVNC/tar.gz/refs/tags/v1.4.0
-    dest: "{{ hub_persistent_volume_path }}/caddy/data"
+    dest: "{{ hub_persistent_volume_path }}/caddy/data/novnc"
     remote_src: yes
     extra_opts: [--strip-components=1]
 
