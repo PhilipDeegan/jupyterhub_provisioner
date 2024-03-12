@@ -1,7 +1,7 @@
 version: '3'
 
 env:
-  TASKFILE_VERSION: ''
+  TASK_VERSION: '3.35'
   COREUTILS_VERSION: '9.4'
   BASH_VERSION: '5'
   ANSIBLE_VERSION: '2.16'
@@ -14,7 +14,7 @@ env:
   ANSIBLE_ROLES_PATH: '{{.PROVISIONER_REPO_PATH}}/roles'
   CONSTRUCTOR_SSH_KEY_PATH:
     sh: |
-      pkgx +taskfile.dev^{{.TASKFILE_VERSION}} task \
+      pkgx +taskfile.dev^{{.TASK_VERSION}} task \
            --silent \
            --taskfile {{.PROJECT_REPO_PATH}}/Taskfile.yaml \
            constructor:get_ssh_key_path
