@@ -36,14 +36,14 @@ tasks:
            USER="{{.USER}}" \
            HOME="{{.HOME}}" \
            PATH="{{.HOME}}/.pkgx/bin:/bin:/usr/bin:/usr/local/bin" \
+           PROJECT_REPO_PATH='{{.PROJECT_REPO_PATH}}' \
            pkgx +gnu.org/bash^{{.BASH_VERSION}} bash \
                 --login \
                 --noprofile \
                 --norc \
                 - <<'EOF'
-                export PROJECT_REPO_PATH='{{.PROJECT_REPO_PATH}}'
                 {{- range $line := splitList "\n" .COMMAND_SCRIPT}}
-                  {{$line -}}
+                {{$line -}}
                 {{- end}}
       EOF
 
