@@ -1,0 +1,153 @@
+version: '3'
+
+env:
+  COREUTILS_VERSION: '9.4'
+  BASH_VERSION: '5'
+  ANSIBLE_VERSION: '2.16'
+  OPENSSH_VERSION: '9.7'
+  JETPORCH_VERSION: '0.0.1'
+
+tasks:
+  default:
+    silent: true
+    cmds:
+    - task --list
+
+  init:
+    cmds:
+      - true
+
+  ansible:
+    vars:
+      PLAYBOOK_NAME: '{{.PLAYBOOK_NAME}}'
+    cmds:
+    - |
+      pkgx +gnu.org/coreutils^{{.COREUTILS_VERSION}} env \
+           --split-string \
+           --ignore-environment \
+           REMOTE_FQDN="{{.REMOTE_FQDN}}" \
+           REMOTE_USER="{{.REMOTE_USER}}" \
+           USER="{{.USER}}" \
+           HOME="{{.HOME}}" \
+           PATH="{{.HOME}}/.pkgx/bin:/bin:/usr/bin:/usr/local/bin" \
+           pkgx +gnu.org/bash^{{.BASH_VERSION}} bash \
+                --login \
+                --noprofile \
+                --norc \
+                - <<'EOF'
+                  #eval "$(pkgx --shellcode)"
+                  eval "$(pkgx +openssh.com ssh-agent)" 2>&1 > /dev/null
+                  pkgx +openssh.com ssh-add -q "{{.CONSTRUCTOR_SSH_KEY_PATH}}" 2>&1 > /dev/null
+                  export ANSIBLE_SSH_USER="{{.REMOTE_USER}}"
+                  export HUB_PERSISTENT_VOLUME_PATH="{{.HUB_PERSISTENT_VOLUME_PATH}}"
+                  export JUPYTERHUB_FQDN="{{.JUPYTERHUB_FQDN}}"
+                  export NOVNC_FQDN="{{.NOVNC_FQDN}}"
+                  export FILESERVER_EXPORT_PATH="{{.FILESERVER_EXPORT_PATH}}"
+                  export INVENTORY="${PWD}/inventory-ansible.pkgx"
+                  export ANSIBLE_ROLES_PATH="${PWD}/roles"
+                  pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
+                      --tags install \
+                      --inventory "${INVENTORY}" \
+                      "${PWD}/playbooks/{{.PLAYBOOK_NAME}}.yaml"
+      EOF
+
+  install:
+    desc: prepare instance with Ansible playbooks
+    cmds:
+    - |
+      pkgx +gnu.org/coreutils^{{.COREUTILS_VERSION}} env \
+           --split-string \
+           --ignore-environment \
+           REMOTE_FQDN="{{.REMOTE_FQDN}}" \
+           REMOTE_USER="{{.REMOTE_USER}}" \
+           USER="{{.USER}}" \
+           HOME="{{.HOME}}" \
+           PATH="{{.HOME}}/.pkgx/bin:/bin:/usr/bin:/usr/local/bin" \
+           pkgx +gnu.org/bash^{{.BASH_VERSION}} bash \
+                --login \
+                --noprofile \
+                --norc \
+                - <<'EOF'
+                  #eval "$(pkgx --shellcode)"
+                  eval "$(pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent)" 2>&1 > /dev/null
+                  pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-add -q "{{.CONSTRUCTOR_SSH_KEY_PATH}}" 2>&1 > /dev/null
+                  export ANSIBLE_SSH_USER="{{.REMOTE_USER}}"
+                  export HUB_PERSISTENT_VOLUME_PATH="{{.HUB_PERSISTENT_VOLUME_PATH}}"
+                  export JUPYTERHUB_FQDN="{{.JUPYTERHUB_FQDN}}"
+                  export NOVNC_FQDN="{{.NOVNC_FQDN}}"
+                  export FILESERVER_EXPORT_PATH="{{.FILESERVER_EXPORT_PATH}}"
+                  export INVENTORY="${PWD}/inventory-ansible.pkgx"
+                  export ANSIBLE_ROLES_PATH="${PWD}/roles"
+                  pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
+                      --tags install \
+                      --inventory "${INVENTORY}" \
+                      "${PWD}/playbooks/main.yaml"
+      EOF
+
+  configure:
+    desc: configure Jupyterhub instance with Ansible playbooks
+    cmds:
+    - |
+      pkgx +gnu.org/coreutils^{{.COREUTILS_VERSION}} env \
+           --split-string \
+           --ignore-environment \
+           REMOTE_FQDN="{{.REMOTE_FQDN}}" \
+           REMOTE_USER="{{.REMOTE_USER}}" \
+           ANSIBLE_SSH_USER="{{.REMOTE_USER}}" \
+           USER="{{.USER}" \
+           HOME="{{.HOME}}" \
+           PATH="{{.HOME}}/.pkgx/bin:/bin:/usr/bin:/usr/local/bin" \
+           pkgx +gnu.org/bash^{{.BASH_VERSION}} bash \
+                --login \
+                --noprofile \
+                --norc \
+                - <<'EOF'
+                  #eval "$(pkgx --shellcode)"
+                  eval "$(pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent)" 2>&1 > /dev/null
+                  pkgx +openssh.com ssh-add -q "{{.CONSTRUCTOR_SSH_KEY_PATH}}" 2>&1 > /dev/null
+                  export HUB_PERSISTENT_VOLUME_PATH="{{.HUB_PERSISTENT_VOLUME_PATH}}"
+                  export JUPYTERHUB_FQDN="{{.JUPYTERHUB_FQDN}}"
+                  export NOVNC_FQDN="{{.NOVNC_FQDN}}"
+                  export FILESERVER_EXPORT_PATH="{{.FILESERVER_EXPORT_PATH}}"
+                  export HOME_PREFIX="{{.HOME_PREFIX}}"
+                  export INVENTORY="${PWD}/inventory-ansible.pkgx"
+                  export ANSIBLE_ROLES_PATH="${PWD}/roles"
+                  pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
+                      --tags configure \
+                      --inventory "${INVENTORY}" \
+                      "${PWD}/playbooks/main.yaml"
+      EOF
+
+
+
+  jetp_install:
+    #desc: prepare instance with recipes
+    cmds:
+    - |
+      pkgx +gnu.org/coreutils^{{.COREUTILS_VERSION}} env \
+           --split-string \
+           --ignore-environment \
+           REMOTE_FQDN="{{.REMOTE_FQDN}}" \
+           REMOTE_USER="{{.REMOTE_USER}}" \
+           USER="{{.USER}}" \
+           HOME="{{.HOME}}" \
+           PATH="{{.HOME}}/.pkgx/bin:/bin:/usr/bin:/usr/local/bin" \
+           pkgx +gnu.org/bash^{{.BASH_VERSION}} bash \
+                --login \
+                --noprofile \
+                --norc \
+                - <<'EOF'
+                  #eval "$(pkgx --shellcode)"
+                  source ../Taskfile.env
+                  eval "$(ssh-agent)"
+                  pkgx +openssh.com^{{OPENSSH_VERSION}} ssh-add $CONSTRUCTOR_SSH_KEY_PATH
+                  pkgx +openssh.com^{{OPENSSH_VERSION}} ssh-add -L
+                  export INVENTORY="./inventory.pkgx"
+                  export PLAYBOOKS="./playbooks"
+                  export ROLES="./roles"
+                  pkgx +jetporch.com^{{.JETPORCH_VERSION}} jetp ssh \
+                      --inventory "${INVENTORY}" \
+                      --playbook "${PLAYBOOKS}/install.yml" \
+                      --roles "${ROLES}" \
+                      -vvv
+      EOF

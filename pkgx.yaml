@@ -1,8 +1,2 @@
 dependencies:
-  gnu.org/coreutils: '*'
-  uuidgen: '*'
-  taskfile.dev: '*'
-  jetporch.com: '*'
-  openssh.com: '*'
-  pkgx: '1.0.0'
-  ansible.com: '*'
+  taskfile.dev: '3.35'
