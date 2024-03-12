@@ -12,12 +12,6 @@ env:
   ANSIBLE_INVENTORY_SCRIPT_PATH: '{{.PROVISIONER_REPO_PATH}}/inventory-ansible.pkgx'
   ANSIBLE_PLAYBOOKS_PATH: '{{.PROVISIONER_REPO_PATH}}/playbooks'
   ANSIBLE_ROLES_PATH: '{{.PROVISIONER_REPO_PATH}}/roles'
-  CONSTRUCTOR_SSH_KEY_PATH:
-    sh: |
-      pkgx +taskfile.dev^{{.TASK_VERSION}} task \
-           --silent \
-           --taskfile {{.PROJECT_REPO_PATH}}/Taskfile.yaml \
-           constructor:get_ssh_key_path
 
 tasks:
   default:
@@ -32,6 +26,13 @@ tasks:
              collection install community.general
 
   with-clean-env:
+    vars:
+      CONSTRUCTOR_SSH_KEY_PATH:
+      sh: |
+        pkgx +taskfile.dev^{{.TASK_VERSION}} task \
+             --silent \
+             --taskfile '{{.PROJECT_REPO_PATH}}/Taskfile.yaml' \
+             constructor:get_ssh_key_path
     internal: true
     cmds:
     - |
