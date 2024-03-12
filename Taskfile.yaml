@@ -61,7 +61,7 @@ tasks:
         sh: pwd
       PROJECT_REPO_PATH:
         sh: dirname '{{.PROVISIONER_REPO_PATH}}'
-      ANSIBLE_TAG: 'install'
+      ANSIBLE_TAGS: 'install'
       ANSIBLE_INVENTORY_SCRIPT_PATH: '{{.PROVISIONER_REPO_PATH}}/inventory-ansible.pkgx'
       ANSIBLE_PLAYBOOKS_PATH: '{{.PROVISIONER_REPO_PATH}}/playbooks'
       ANSIBLE_ROLES_PATH: '{{.PROVISIONER_REPO_PATH}}/roles'
