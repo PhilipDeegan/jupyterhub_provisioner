@@ -57,8 +57,7 @@ tasks:
   install:
     desc: prepare instance with Ansible playbooks
     vars:
-      PROVISIONER_REPO_PATH:
-        sh: pwd
+      PROVISIONER_REPO_PATH: '{{ .PWD }}'
       PROJECT_REPO_PATH:
         sh: dirname '{{.PROVISIONER_REPO_PATH}}'
       ANSIBLE_TAGS: 'install'
