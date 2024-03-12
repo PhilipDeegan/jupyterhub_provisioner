@@ -1,6 +1,7 @@
 version: '3'
 
 env:
+  TASKFILE_VERSION: ''
   COREUTILS_VERSION: '9.4'
   BASH_VERSION: '5'
   ANSIBLE_VERSION: '2.16'
@@ -11,6 +12,12 @@ env:
   ANSIBLE_INVENTORY_SCRIPT_PATH: '{{.PROVISIONER_REPO_PATH}}/inventory-ansible.pkgx'
   ANSIBLE_PLAYBOOKS_PATH: '{{.PROVISIONER_REPO_PATH}}/playbooks'
   ANSIBLE_ROLES_PATH: '{{.PROVISIONER_REPO_PATH}}/roles'
+  CONSTRUCTOR_SSH_KEY_PATH:
+    sh: |
+      pkgx +taskfile.dev^{{.TASKFILE_VERSION}} task \
+           --silent \
+           --taskfile {{.PROJECT_REPO_PATH}}/Taskfile.yaml \
+           constructor:get_ssh_key_path
 
 tasks:
   default:

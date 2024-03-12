@@ -32,7 +32,7 @@ function main {
   
   get_remote_fqdn
   get_remote_user
-  get_ssh_key_path
+  #get_ssh_key_path
 
   cat <<EOF > "${inventory_file_path}"
 {
