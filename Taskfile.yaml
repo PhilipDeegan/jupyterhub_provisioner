@@ -44,7 +44,7 @@ tasks:
       EOF
 
   install:
-    desc: prepare instance with Ansible playbooks
+    desc: prepare JupyterHub instance with Ansible playbooks
     vars:
       ANSIBLE_TAGS: 'install'
       COMMAND_SCRIPT: |
@@ -67,7 +67,7 @@ tasks:
         COMMAND_SCRIPT: '{{.COMMAND_SCRIPT}}'
 
   configure:
-    desc: configure Jupyterhub instance with Ansible playbooks
+    desc: configure JupyterHub instance with Ansible playbooks
     vars:
       ANSIBLE_TAG: 'configure'
       COMMAND_SCRIPT: |
