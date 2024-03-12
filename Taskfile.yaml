@@ -127,6 +127,12 @@ tasks:
       EOF
 
 
+  #
+  # the image_build constructor needs this task, even empty
+  #
+  tests:
+    cmds:
+    - true
 
   jetp_install:
     #desc: prepare instance with recipes
