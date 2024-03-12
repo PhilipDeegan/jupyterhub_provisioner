@@ -15,7 +15,8 @@ tasks:
 
   init:
     cmds:
-      - ansible-galaxy collection install community.general
+      - pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-galaxy \
+             collection install community.general
 
   ansible:
     vars:
