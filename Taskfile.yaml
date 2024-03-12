@@ -7,6 +7,7 @@ env:
   OPENSSH_VERSION: '9.7'
   JETPORCH_VERSION: '0.0.1'
 
+
 tasks:
   default:
     silent: true
@@ -55,6 +56,15 @@ tasks:
 
   install:
     desc: prepare instance with Ansible playbooks
+    vars:
+      PROVISIONER_REPO_PATH:
+        sh: pwd
+      PROJECT_REPO_PATH:
+        sh: dirname '{{.PROVISIONER_REPO_PATH}}'
+      ANSIBLE_TAG: 'install'
+      ANSIBLE_INVENTORY_SCRIPT_PATH: '{{.PROVISIONER_REPO_PATH}}/inventory-ansible.pkgx'
+      ANSIBLE_PLAYBOOKS_PATH: '{{.PROVISIONER_REPO_PATH}}/playbooks'
+      ANSIBLE_ROLES_PATH: '{{.PROVISIONER_REPO_PATH}}/roles'
     cmds:
     - |
       pkgx +gnu.org/coreutils^{{.COREUTILS_VERSION}} env \
@@ -70,20 +80,19 @@ tasks:
                 --noprofile \
                 --norc \
                 - <<'EOF'
-                  #eval "$(pkgx --shellcode)"
                   eval "$(pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent)" 2>&1 > /dev/null
-                  pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-add -q "{{.CONSTRUCTOR_SSH_KEY_PATH}}" 2>&1 > /dev/null
-                  export ANSIBLE_SSH_USER="{{.REMOTE_USER}}"
-                  export HUB_PERSISTENT_VOLUME_PATH="{{.HUB_PERSISTENT_VOLUME_PATH}}"
-                  export JUPYTERHUB_FQDN="{{.JUPYTERHUB_FQDN}}"
-                  export NOVNC_FQDN="{{.NOVNC_FQDN}}"
-                  export FILESERVER_EXPORT_PATH="{{.FILESERVER_EXPORT_PATH}}"
-                  export INVENTORY="${PWD}/inventory-ansible.pkgx"
-                  export ANSIBLE_ROLES_PATH="${PWD}/roles"
+                  pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-add -q '{{.CONSTRUCTOR_SSH_KEY_PATH}}' 2>&1 > /dev/null
+                  export ANSIBLE_SSH_USER='{{.REMOTE_USER}}'
+                  export HUB_PERSISTENT_VOLUME_PATH='{{.HUB_PERSISTENT_VOLUME_PATH}}'
+                  export JUPYTERHUB_FQDN='{{.JUPYTERHUB_FQDN}}'
+                  export NOVNC_FQDN='{{.NOVNC_FQDN}}'
+                  export FILESERVER_EXPORT_PATH='{{.FILESERVER_EXPORT_PATH}}'
+                  #export INVENTORY="${PWD}/inventory-ansible.pkgx"
+                  export ANSIBLE_ROLES_PATH="{{.ANSIBLE_ROLES_PATH}}"
                   pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
-                      --tags install \
-                      --inventory "${INVENTORY}" \
-                      "${PWD}/playbooks/main.yaml"
+                       --tags '{{.ANSIBLE_TAGS}}' \
+                       --inventory '{{.ANSIBLE_INVENTORY_SCRIPT_PATH}}' \
+                       '{{.ANSIBLE_PLAYBOOKS_PATH}}/main.yaml'
       EOF
 
   configure:

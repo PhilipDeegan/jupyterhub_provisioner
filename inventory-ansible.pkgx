@@ -3,21 +3,21 @@ function get_ssh_key_path {
   if [[ -z ${CONSTRUCTOR_SSH_KEY_PATH} || ! -v CONSTRUCTOR_SSH_KEY_PATH ]]; then
     printf -v CONSTRUCTOR_SSH_KEY_PATH \
            '%s' \
-           "$(task -s --taskfile ${parent_script_dir_path}/Taskfile.yml constructor:get_ssh_key_path)"
+           "$(pkgx task -s --taskfile ${parent_script_dir_path}/Taskfile.yml constructor:get_ssh_key_path)"
   fi
 }
 function get_remote_fqdn {
   if [[ -z ${REMOTE_FQDN} || ! -v REMOTE_FQDN ]]; then
     printf -v REMOTE_FQDN \
            '%s' \
-           "$(task -s --taskfile ${parent_script_dir_path}/Taskfile.yml constructor:get_remote_fqdn)"
+           "$(pkgx task -s --taskfile ${parent_script_dir_path}/Taskfile.yml constructor:get_remote_fqdn)"
   fi
 }
 function get_remote_user {
   if [[ -z ${REMOTE_USER} || ! -v REMOTE_USER ]]; then
     printf -v REMOTE_USER \
            '%s' \
-           "$(task -s --taskfile ${parent_script_dir_path}/Taskfile.yml constructor:get_remote_user)"
+           "$(pkgx task -s --taskfile ${parent_script_dir_path}/Taskfile.yml constructor:get_remote_user)"
   fi
 }
 
