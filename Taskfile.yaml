@@ -41,9 +41,10 @@ tasks:
                 --noprofile \
                 --norc \
                 - <<'EOF'
+                export PROJECT_REPO_PATH='{{.PROJECT_REPO_PATH}}'
                 {{- range $line := splitList "\n" .COMMAND_SCRIPT}}
                   {{$line -}}
-      {{- end}}
+                {{- end}}
       EOF
 
   test:
