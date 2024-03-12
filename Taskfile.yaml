@@ -84,7 +84,6 @@ tasks:
              --tags '{{.ANSIBLE_TAGS}}' \
              --inventory '{{.ANSIBLE_INVENTORY_SCRIPT_PATH}}' \
              '{{.ANSIBLE_PLAYBOOKS_PATH}}/main.yaml'
-      EOF
     cmds:
     - task: pkgx
       vars:
