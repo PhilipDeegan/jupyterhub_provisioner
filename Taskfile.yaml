@@ -41,9 +41,9 @@ tasks:
                 --noprofile \
                 --norc \
                 - <<'EOF'
-      {{range $line := splitList "\n" .COMMAND_SCRIPT}}
+                {{- range $line := splitList "\n" .COMMAND_SCRIPT}}
                   {{$line -}}
-      {{end }}
+      {{- end}}
       EOF
 
   test:
