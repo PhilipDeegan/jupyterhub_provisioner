@@ -15,7 +15,8 @@ tasks:
 
   init:
     cmds:
-      - pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-galaxy \
+      - |
+        pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-galaxy \
              collection install community.general
 
   ansible:
