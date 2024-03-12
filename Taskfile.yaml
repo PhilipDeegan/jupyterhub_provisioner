@@ -24,7 +24,8 @@ tasks:
         pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-galaxy \
              collection install community.general
 
-  pkgx:
+  with-clean-env:
+    internal: true
     cmds:
     - |
       pkgx +gnu.org/coreutils^{{.COREUTILS_VERSION}} env \
@@ -52,7 +53,7 @@ tasks:
         echo B
         echo C
     cmds:
-    - task: pkgx
+    - task: with-clean-env
       vars:
         COMMAND_SCRIPT: '{{.COMMAND_SCRIPT}}'
 
@@ -76,7 +77,7 @@ tasks:
              '{{.ANSIBLE_PLAYBOOKS_PATH}}/main.yaml'
         pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent -k
     cmds:
-    - task: pkgx
+    - task: with-clean-env
       vars:
         COMMAND_SCRIPT: '{{.COMMAND_SCRIPT}}'
 
@@ -100,7 +101,7 @@ tasks:
              '{{.ANSIBLE_PLAYBOOKS_PATH}}/main.yaml'
         pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent -k
     cmds:
-    - task: pkgx
+    - task: with-clean-env
       vars:
         COMMAND_SCRIPT: '{{.COMMAND_SCRIPT}}'
 
