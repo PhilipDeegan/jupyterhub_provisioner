@@ -1,4 +1,5 @@
 #!/usr/bin/env -S pkgx --silent +gnu.org/bash^5 bash
+
 function get_ssh_key_path {
   if [[ -z ${CONSTRUCTOR_SSH_KEY_PATH} || ! -v CONSTRUCTOR_SSH_KEY_PATH ]]; then
     printf -v CONSTRUCTOR_SSH_KEY_PATH \

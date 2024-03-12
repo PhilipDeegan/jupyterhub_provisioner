@@ -61,9 +61,7 @@ tasks:
   install:
     desc: prepare instance with Ansible playbooks
     vars:
-
       ANSIBLE_TAGS: 'install'
-
     cmds:
     - |
       pkgx +gnu.org/coreutils^{{.COREUTILS_VERSION}} env \
@@ -87,6 +85,7 @@ tasks:
                   export NOVNC_FQDN='{{.NOVNC_FQDN}}'
                   export FILESERVER_EXPORT_PATH='{{.FILESERVER_EXPORT_PATH}}'
                   export ANSIBLE_ROLES_PATH="{{.ANSIBLE_ROLES_PATH}}"
+                  export ANSIBLE_HOST_KEY_CHECKING=false
                   pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
                        --tags '{{.ANSIBLE_TAGS}}' \
                        --inventory '{{.ANSIBLE_INVENTORY_SCRIPT_PATH}}' \
