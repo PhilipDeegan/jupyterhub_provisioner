@@ -24,9 +24,7 @@ tasks:
         pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-galaxy \
              collection install community.general
 
-  ansible:
-    vars:
-      PLAYBOOK_NAME: '{{.PLAYBOOK_NAME}}'
+  pkgx:
     cmds:
     - |
       pkgx +gnu.org/coreutils^{{.COREUTILS_VERSION}} env \
@@ -42,90 +40,55 @@ tasks:
                 --noprofile \
                 --norc \
                 - <<'EOF'
-                  #eval "$(pkgx --shellcode)"
-                  eval "$(pkgx +openssh.com ssh-agent)" 2>&1 > /dev/null
-                  pkgx +openssh.com ssh-add -q "{{.CONSTRUCTOR_SSH_KEY_PATH}}" 2>&1 > /dev/null
-                  export ANSIBLE_SSH_USER="{{.REMOTE_USER}}"
-                  export HUB_PERSISTENT_VOLUME_PATH="{{.HUB_PERSISTENT_VOLUME_PATH}}"
-                  export JUPYTERHUB_FQDN="{{.JUPYTERHUB_FQDN}}"
-                  export NOVNC_FQDN="{{.NOVNC_FQDN}}"
-                  export FILESERVER_EXPORT_PATH="{{.FILESERVER_EXPORT_PATH}}"
-                  export INVENTORY="${PWD}/inventory-ansible.pkgx"
-                  export ANSIBLE_ROLES_PATH="${PWD}/roles"
-                  pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
-                      --tags install \
-                      --inventory "${INVENTORY}" \
-                      "${PWD}/playbooks/{{.PLAYBOOK_NAME}}.yaml"
+      {{.COMMAND_SCRIPT}}
       EOF
 
   install:
     desc: prepare instance with Ansible playbooks
     vars:
       ANSIBLE_TAGS: 'install'
+      COMMAND_SCRIPT: |
+        eval "$(pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent)" 2>&1 > /dev/null
+        pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-add -q '{{.CONSTRUCTOR_SSH_KEY_PATH}}' 2>&1 > /dev/null
+        export ANSIBLE_SSH_USER='{{.REMOTE_USER}}'
+        export HUB_PERSISTENT_VOLUME_PATH='{{.HUB_PERSISTENT_VOLUME_PATH}}'
+        export JUPYTERHUB_FQDN='{{.JUPYTERHUB_FQDN}}'
+        export NOVNC_FQDN='{{.NOVNC_FQDN}}'
+        export FILESERVER_EXPORT_PATH='{{.FILESERVER_EXPORT_PATH}}'
+        export ANSIBLE_ROLES_PATH="{{.ANSIBLE_ROLES_PATH}}"
+        export ANSIBLE_HOST_KEY_CHECKING=false
+        pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
+             --tags '{{.ANSIBLE_TAGS}}' \
+             --inventory '{{.ANSIBLE_INVENTORY_SCRIPT_PATH}}' \
+             '{{.ANSIBLE_PLAYBOOKS_PATH}}/main.yaml'
     cmds:
-    - |
-      pkgx +gnu.org/coreutils^{{.COREUTILS_VERSION}} env \
-           --split-string \
-           --ignore-environment \
-           REMOTE_FQDN="{{.REMOTE_FQDN}}" \
-           REMOTE_USER="{{.REMOTE_USER}}" \
-           USER="{{.USER}}" \
-           HOME="{{.HOME}}" \
-           PATH="{{.HOME}}/.pkgx/bin:/bin:/usr/bin:/usr/local/bin" \
-           pkgx +gnu.org/bash^{{.BASH_VERSION}} bash \
-                --login \
-                --noprofile \
-                --norc \
-                - <<'EOF'
-                  eval "$(pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent)" 2>&1 > /dev/null
-                  pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-add -q '{{.CONSTRUCTOR_SSH_KEY_PATH}}' 2>&1 > /dev/null
-                  export ANSIBLE_SSH_USER='{{.REMOTE_USER}}'
-                  export HUB_PERSISTENT_VOLUME_PATH='{{.HUB_PERSISTENT_VOLUME_PATH}}'
-                  export JUPYTERHUB_FQDN='{{.JUPYTERHUB_FQDN}}'
-                  export NOVNC_FQDN='{{.NOVNC_FQDN}}'
-                  export FILESERVER_EXPORT_PATH='{{.FILESERVER_EXPORT_PATH}}'
-                  export ANSIBLE_ROLES_PATH="{{.ANSIBLE_ROLES_PATH}}"
-                  export ANSIBLE_HOST_KEY_CHECKING=false
-                  pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
-                       --tags '{{.ANSIBLE_TAGS}}' \
-                       --inventory '{{.ANSIBLE_INVENTORY_SCRIPT_PATH}}' \
-                       '{{.ANSIBLE_PLAYBOOKS_PATH}}/main.yaml'
-      EOF
+    - task: pkgx
+      vars:
+        COMMAND_SCRIPT: '{{.COMMAND_SCRIPT}}'
 
   configure:
     desc: configure Jupyterhub instance with Ansible playbooks
-    cmds:
-    - |
-      pkgx +gnu.org/coreutils^{{.COREUTILS_VERSION}} env \
-           --split-string \
-           --ignore-environment \
-           REMOTE_FQDN="{{.REMOTE_FQDN}}" \
-           REMOTE_USER="{{.REMOTE_USER}}" \
-           ANSIBLE_SSH_USER="{{.REMOTE_USER}}" \
-           USER="{{.USER}" \
-           HOME="{{.HOME}}" \
-           PATH="{{.HOME}}/.pkgx/bin:/bin:/usr/bin:/usr/local/bin" \
-           pkgx +gnu.org/bash^{{.BASH_VERSION}} bash \
-                --login \
-                --noprofile \
-                --norc \
-                - <<'EOF'
-                  #eval "$(pkgx --shellcode)"
-                  eval "$(pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent)" 2>&1 > /dev/null
-                  pkgx +openssh.com ssh-add -q "{{.CONSTRUCTOR_SSH_KEY_PATH}}" 2>&1 > /dev/null
-                  export HUB_PERSISTENT_VOLUME_PATH="{{.HUB_PERSISTENT_VOLUME_PATH}}"
-                  export JUPYTERHUB_FQDN="{{.JUPYTERHUB_FQDN}}"
-                  export NOVNC_FQDN="{{.NOVNC_FQDN}}"
-                  export FILESERVER_EXPORT_PATH="{{.FILESERVER_EXPORT_PATH}}"
-                  export HOME_PREFIX="{{.HOME_PREFIX}}"
-                  export INVENTORY="${PWD}/inventory-ansible.pkgx"
-                  export ANSIBLE_ROLES_PATH="${PWD}/roles"
-                  pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
-                      --tags configure \
-                      --inventory "${INVENTORY}" \
-                      "${PWD}/playbooks/main.yaml"
+    vars:
+      ANSIBLE_TAG: 'configure'
+      COMMAND_SCRIPT: |
+        eval "$(pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent)" 2>&1 > /dev/null
+        pkgx +openssh.com ssh-add -q "{{.CONSTRUCTOR_SSH_KEY_PATH}}" 2>&1 > /dev/null
+        export HUB_PERSISTENT_VOLUME_PATH="{{.HUB_PERSISTENT_VOLUME_PATH}}"
+        export JUPYTERHUB_FQDN="{{.JUPYTERHUB_FQDN}}"
+        export NOVNC_FQDN="{{.NOVNC_FQDN}}"
+        export FILESERVER_EXPORT_PATH="{{.FILESERVER_EXPORT_PATH}}"
+        export HOME_PREFIX="{{.HOME_PREFIX}}"
+        export INVENTORY="${PWD}/inventory-ansible.pkgx"
+        export ANSIBLE_ROLES_PATH="${PWD}/roles"
+        pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
+             --tags '{{.ANSIBLE_TAGS}}' \
+             --inventory '{{.ANSIBLE_INVENTORY_SCRIPT_PATH}}' \
+             '{{.ANSIBLE_PLAYBOOKS_PATH}}/main.yaml'
       EOF
-
+    cmds:
+    - task: pkgx
+      vars:
+        COMMAND_SCRIPT: '{{.COMMAND_SCRIPT}}'
 
   #
   # the image_build constructor needs this task, even empty
