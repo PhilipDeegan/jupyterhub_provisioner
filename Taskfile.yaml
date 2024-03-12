@@ -40,7 +40,7 @@ tasks:
                 --noprofile \
                 --norc \
                 - <<'EOF'
-      {{.COMMAND_SCRIPT}}
+                {{.COMMAND_SCRIPT}}
       EOF
 
   install:
@@ -61,6 +61,7 @@ tasks:
              --tags '{{.ANSIBLE_TAGS}}' \
              --inventory '{{.ANSIBLE_INVENTORY_SCRIPT_PATH}}' \
              '{{.ANSIBLE_PLAYBOOKS_PATH}}/main.yaml'
+        pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent -k
     cmds:
     - task: pkgx
       vars:
@@ -72,7 +73,7 @@ tasks:
       ANSIBLE_TAG: 'configure'
       COMMAND_SCRIPT: |
         eval "$(pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent)" 2>&1 > /dev/null
-        pkgx +openssh.com ssh-add -q "{{.CONSTRUCTOR_SSH_KEY_PATH}}" 2>&1 > /dev/null
+        pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-add -q '{{.CONSTRUCTOR_SSH_KEY_PATH}}' 2>&1 > /dev/null
         export HUB_PERSISTENT_VOLUME_PATH="{{.HUB_PERSISTENT_VOLUME_PATH}}"
         export JUPYTERHUB_FQDN="{{.JUPYTERHUB_FQDN}}"
         export NOVNC_FQDN="{{.NOVNC_FQDN}}"
@@ -83,6 +84,7 @@ tasks:
              --tags '{{.ANSIBLE_TAGS}}' \
              --inventory '{{.ANSIBLE_INVENTORY_SCRIPT_PATH}}' \
              '{{.ANSIBLE_PLAYBOOKS_PATH}}/main.yaml'
+        pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent -k
     cmds:
     - task: pkgx
       vars:
@@ -114,7 +116,7 @@ tasks:
                 - <<'EOF'
                   #eval "$(pkgx --shellcode)"
                   source ../Taskfile.env
-                  eval "$(ssh-agent)"
+                  eval "$(pkgx +openssh.com^{{OPENSSH_VERSION}} ssh-agent)"  2>&1 > /dev/null
                   pkgx +openssh.com^{{OPENSSH_VERSION}} ssh-add $CONSTRUCTOR_SSH_KEY_PATH
                   pkgx +openssh.com^{{OPENSSH_VERSION}} ssh-add -L
                   export INVENTORY="./inventory.pkgx"
@@ -125,4 +127,5 @@ tasks:
                       --playbook "${PLAYBOOKS}/install.yml" \
                       --roles "${ROLES}" \
                       -vvv
+                  pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent -k
       EOF
