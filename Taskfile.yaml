@@ -42,7 +42,7 @@ tasks:
                 --norc \
                 - <<'EOF'
       {{range $line := splitList "\n" .COMMAND_SCRIPT}}
-               {{$line -}}
+                  {{$line -}}
       {{end }}
       EOF
 
