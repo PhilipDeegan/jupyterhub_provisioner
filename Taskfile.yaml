@@ -15,7 +15,7 @@ tasks:
 
   init:
     cmds:
-      - true
+      - ansible-galaxy collection install community.general
 
   ansible:
     vars:
