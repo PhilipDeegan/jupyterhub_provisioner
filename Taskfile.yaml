@@ -78,8 +78,7 @@ tasks:
         export NOVNC_FQDN="{{.NOVNC_FQDN}}"
         export FILESERVER_EXPORT_PATH="{{.FILESERVER_EXPORT_PATH}}"
         export HOME_PREFIX="{{.HOME_PREFIX}}"
-        export INVENTORY="${PWD}/inventory-ansible.pkgx"
-        export ANSIBLE_ROLES_PATH="${PWD}/roles"
+        export ANSIBLE_ROLES_PATH="{{.ANSIBLE_ROLES_PATH}}"
         pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
              --tags '{{.ANSIBLE_TAGS}}' \
              --inventory '{{.ANSIBLE_INVENTORY_SCRIPT_PATH}}' \
