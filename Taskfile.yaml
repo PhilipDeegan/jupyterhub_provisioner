@@ -57,9 +57,8 @@ tasks:
   install:
     desc: prepare instance with Ansible playbooks
     vars:
-      PROVISIONER_REPO_PATH: '{{ .PWD }}'
-      PROJECT_REPO_PATH:
-        sh: dirname '{{.PROVISIONER_REPO_PATH}}'
+      PROVISIONER_REPO_PATH: '{{.TASKFILE_DIR}}'
+      PROJECT_REPO_PATH: '{{.ROOT_DIR}}'
       ANSIBLE_TAGS: 'install'
       ANSIBLE_INVENTORY_SCRIPT_PATH: '{{.PROVISIONER_REPO_PATH}}/inventory-ansible.pkgx'
       ANSIBLE_PLAYBOOKS_PATH: '{{.PROVISIONER_REPO_PATH}}/playbooks'
@@ -86,7 +85,6 @@ tasks:
                   export JUPYTERHUB_FQDN='{{.JUPYTERHUB_FQDN}}'
                   export NOVNC_FQDN='{{.NOVNC_FQDN}}'
                   export FILESERVER_EXPORT_PATH='{{.FILESERVER_EXPORT_PATH}}'
-                  #export INVENTORY="${PWD}/inventory-ansible.pkgx"
                   export ANSIBLE_ROLES_PATH="{{.ANSIBLE_ROLES_PATH}}"
                   pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
                        --tags '{{.ANSIBLE_TAGS}}' \
