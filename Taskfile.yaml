@@ -26,13 +26,6 @@ tasks:
              collection install community.general
 
   with-clean-env:
-    vars:
-      CONSTRUCTOR_SSH_KEY_PATH:
-      sh: |
-        pkgx +taskfile.dev^{{.TASK_VERSION}} task \
-             --silent \
-             --taskfile '{{.PROJECT_REPO_PATH}}/Taskfile.yaml' \
-             constructor:get_ssh_key_path
     internal: true
     cmds:
     - |
@@ -70,6 +63,12 @@ tasks:
     desc: prepare JupyterHub instance with Ansible playbooks
     vars:
       ANSIBLE_TAGS: 'install'
+      CONSTRUCTOR_SSH_KEY_PATH:
+        sh: |
+          pkgx +taskfile.dev^{{.TASK_VERSION}} task \
+               --silent \
+               --taskfile '{{.PROJECT_REPO_PATH}}/Taskfile.yaml' \
+               constructor:get_ssh_key_path
       COMMAND_SCRIPT: |
         eval "$(pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent)" 2>&1 > /dev/null
         pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-add -q '{{.CONSTRUCTOR_SSH_KEY_PATH}}' 2>&1 > /dev/null
@@ -95,6 +94,12 @@ tasks:
     desc: configure JupyterHub instance with Ansible playbooks
     vars:
       ANSIBLE_TAG: 'configure'
+      CONSTRUCTOR_SSH_KEY_PATH:
+        sh: |
+          pkgx +taskfile.dev^{{.TASK_VERSION}} task \
+               --silent \
+               --taskfile '{{.PROJECT_REPO_PATH}}/Taskfile.yaml' \
+               constructor:get_ssh_key_path
       COMMAND_SCRIPT: |
         eval "$(pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent)" 2>&1 > /dev/null
         pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-add -q '{{.CONSTRUCTOR_SSH_KEY_PATH}}' 2>&1 > /dev/null
