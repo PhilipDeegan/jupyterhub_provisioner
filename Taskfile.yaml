@@ -93,7 +93,7 @@ tasks:
   configure:
     desc: configure JupyterHub instance with Ansible playbooks
     vars:
-      ANSIBLE_TAG: 'configure'
+      ANSIBLE_TAGS: 'configure'
       CONSTRUCTOR_SSH_KEY_PATH:
         sh: |
           pkgx +taskfile.dev^{{.TASK_VERSION}} task \
@@ -156,5 +156,6 @@ tasks:
                       --playbook "${PLAYBOOKS}/install.yml" \
                       --roles "${ROLES}" \
                       -vvv
-                  pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent -k
+                  pkgx +openssh.com^{{.OPENSSH_VERSION}} \
+                       ssh-agent -k 2>&1 > /dev/null
       EOF
