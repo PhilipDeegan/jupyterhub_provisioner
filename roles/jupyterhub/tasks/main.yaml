@@ -15,7 +15,7 @@
   tags: install
 
 - import_tasks: process-supervisor.yaml
-  tags: install
+  tags: configure
 
 - import_tasks: zfs-filesystem.yaml
   tags: configure
