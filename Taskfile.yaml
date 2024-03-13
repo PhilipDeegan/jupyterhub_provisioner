@@ -102,18 +102,21 @@ tasks:
                constructor:get_ssh_key_path
       COMMAND_SCRIPT: |
         eval "$(pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent)" 2>&1 > /dev/null
-        pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-add -q '{{.CONSTRUCTOR_SSH_KEY_PATH}}' 2>&1 > /dev/null
+        pkgx +openssh.com^{{.OPENSSH_VERSION}} \
+             ssh-add -q '{{.CONSTRUCTOR_SSH_KEY_PATH}}' 2>&1 > /dev/null
         export HUB_PERSISTENT_VOLUME_PATH="{{.HUB_PERSISTENT_VOLUME_PATH}}"
         export JUPYTERHUB_FQDN="{{.JUPYTERHUB_FQDN}}"
         export NOVNC_FQDN="{{.NOVNC_FQDN}}"
         export FILESERVER_EXPORT_PATH="{{.FILESERVER_EXPORT_PATH}}"
         export HOME_PREFIX="{{.HOME_PREFIX}}"
         export ANSIBLE_ROLES_PATH="{{.ANSIBLE_ROLES_PATH}}"
-        pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-playbook \
+        pkgx +ansible.com^{{.ANSIBLE_VERSION}} \
+             ansible-playbook \
              --tags '{{.ANSIBLE_TAGS}}' \
              --inventory '{{.ANSIBLE_INVENTORY_SCRIPT_PATH}}' \
              '{{.ANSIBLE_PLAYBOOKS_PATH}}/main.yaml'
-        pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent -k
+        pkgx +openssh.com^{{.OPENSSH_VERSION}} \
+             ssh-agent -k 2>&1 > /dev/null
     cmds:
     - task: with-clean-env
       vars:
