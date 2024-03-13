@@ -1,5 +1,7 @@
 - hosts: targets
   become: true
+  vars:
+    ansible_remote_tmp: /tmp   
   tasks:
   - import_role:
       name: jupyterhub

@@ -73,7 +73,6 @@ tasks:
       COMMAND_SCRIPT: |
         eval "$(pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-agent)" 2>&1 > /dev/null
         pkgx +openssh.com^{{.OPENSSH_VERSION}} ssh-add -q '{{.CONSTRUCTOR_SSH_KEY_PATH}}' 2>&1 > /dev/null
-        #export ANSIBLE_SSH_USER='{{.REMOTE_USER}}'
         export HUB_PERSISTENT_VOLUME_PATH='{{.HUB_PERSISTENT_VOLUME_PATH}}'
         export JUPYTERHUB_FQDN='{{.JUPYTERHUB_FQDN}}'
         export NOVNC_FQDN='{{.NOVNC_FQDN}}'
