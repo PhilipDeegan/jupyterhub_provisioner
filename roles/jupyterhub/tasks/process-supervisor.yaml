@@ -6,10 +6,3 @@
     group: root
     mode: '0600'
 
-- name: Make sure Jupyterhub unit is enabled
-  ansible.builtin.systemd_service:
-    name: jupyterhub
-    enabled: true
-    state: started
-
-
