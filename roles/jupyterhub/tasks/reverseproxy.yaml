@@ -27,16 +27,5 @@
       update_cache: yes
       name: caddy
 
-- name: Update Caddy service (ExecStart)
-  ansible.builtin.lineinfile:
-    path: /lib/systemd/system/caddy.service
-    line: ExecStart=/usr/bin/caddy run --environ --config {{ hub_persistent_volume_path }}/caddy/Caddyfile
-    regexp: "^ExecStart="
-
-- name: Update Caddy service (ExecRestart)
-  ansible.builtin.lineinfile:
-    path: /lib/systemd/system/caddy.service
-    line: ExecReload=/usr/bin/caddy reload --config {{ hub_persistent_volume_path }}/caddy/Caddyfile --force
-    regexp: "^ExecReload="
 
 
