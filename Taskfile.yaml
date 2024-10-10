@@ -20,6 +20,7 @@ tasks:
     - task --list
 
   init:
+    desc: initialize
     cmds:
       - |
         pkgx +ansible.com^{{.ANSIBLE_VERSION}} ansible-galaxy \
